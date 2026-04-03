@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedBlueprint | The First-Gen Med Student Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Smooth transitions */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <script>
+        // Updated color palette to match the MedBlueprint Logo's deep blues
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb', // Primary Button/Accent Blue
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#0B2447', // Deep Navy from the logo background
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 h-screen flex overflow-hidden">
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white w-64 h-full border-r border-gray-200 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition duration-200 ease-in-out z-30">
+        <!-- Logo Section -->
+        <div class="p-5 flex items-center justify-center border-b border-gray-100 bg-brand-900">
+            <!-- Looks for logo.png in the same folder -->
+            <img src="logo.png" alt="MedBlueprint Logo" class="h-12 w-auto object-contain drop-shadow-md" onerror="this.onerror=null; this.src='https://placehold.co/400x120/0B2447/60a5fa?text=MedBlueprint';">
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            <button onclick="navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-brand-600 bg-brand-50 font-medium transition-colors" data-target="dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+            </button>
+            <button onclick="navigate('roadmap')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium transition-colors" data-target="roadmap">
+                <i data-lucide="map" class="w-5 h-5"></i> My Blueprint
+            </button>
+            <button onclick="navigate('mentorship')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium transition-colors" data-target="mentorship">
+                <i data-lucide="users" class="w-5 h-5"></i> Mentorship Q&A
+            </button>
+            <button onclick="navigate('opportunities')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium transition-colors" data-target="opportunities">
+                <i data-lucide="briefcase" class="w-5 h-5"></i> Opportunity Hub
+            </button>
+            <button onclick="navigate('ai')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium transition-colors" data-target="ai">
+                <i data-lucide="brain-circuit" class="w-5 h-5"></i> Study AI
+            </button>
+            
+            <div class="pt-6 pb-2">
+                <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Support</p>
+            </div>
+            <button onclick="navigate('founders')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-gray-600 hover:bg-gray-50 hover:text-brand-600 font-medium transition-colors" data-target="founders">
+                <i data-lucide="heart-handshake" class="w-5 h-5"></i> Founder's Corner
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100">
+            <div class="flex items-center gap-3 px-4 py-2">
+                <img src="https://ui-avatars.com/api/?name=Ahmed+M&background=2563eb&color=fff" alt="User" class="w-10 h-10 rounded-full shadow-sm">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900">Ahmed M.</p>
+                    <p class="text-xs text-gray-500">Year 2 • JU</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-full relative w-full">
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8 shrink-0">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-gray-700">
+                    <i data-lucide="menu"></i>
+                </button>
+                <h1 id="page-title" class="text-lg font-semibold text-gray-800">Overview</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-gray-400 hover:text-brand-600 transition">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                </button>
+                <span class="hidden sm:inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                    <i data-lucide="zap" class="w-3 h-3"></i> Pro Plan
+                </span>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <main id="main-content" class="flex-1 overflow-y-auto bg-gray-50 p-4 lg:p-8 hide-scrollbar">
+            <!-- Content injected via JS -->
+        </main>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Data Mocks
+        const views = {
+            dashboard: `
+                <div class="fade-in max-w-5xl mx-auto space-y-6">
+                    <div class="bg-gradient-to-r from-brand-900 to-brand-700 rounded-2xl p-6 sm:p-8 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Welcome back, Ahmed! 👋</h2>
+                            <p class="text-brand-100 max-w-xl">You are on week 4 of your Year 2 Basic Sciences block. You're completely on track for your USMLE Step 1 timeline.</p>
+                        </div>
+                        <button onclick="navigate('roadmap')" class="bg-white text-brand-700 px-5 py-2.5 rounded-xl font-semibold shadow-sm hover:bg-brand-50 transition w-full sm:w-auto text-center">
+                            View Blueprint
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Progress Card -->
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm col-span-1 md:col-span-2">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-gray-800">Current Milestone: Patho/Pharma</h3>
+                                <span class="text-sm text-brand-600 font-semibold">65% Complete</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 mb-6">
+                                <div class="bg-brand-500 h-2.5 rounded-full" style="width: 65%"></div>
+                            </div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Tasks for this week</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3">
+                                    <div class="mt-0.5 w-5 h-5 rounded border-2 border-brand-500 bg-brand-500 text-white flex items-center justify-center"><i data-lucide="check" class="w-3 h-3"></i></div>
+                                    <span class="text-sm text-gray-600 line-through">Finish Sketchy Micro (Viruses)</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="mt-0.5 w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center"></div>
+                                    <span class="text-sm text-gray-800 font-medium">Do 50 Anki cards for Pathology</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <div class="mt-0.5 w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center"></div>
+                                    <span class="text-sm text-gray-800 font-medium">Read AI summary for CVS physiology</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Mini Mentorship/Community -->
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h3 class="font-bold text-gray-800 mb-4">Top Q&A This Week</h3>
+                            <div class="space-y-4">
+                                <div class="p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                                    <p class="text-sm font-medium text-gray-800 mb-1">"When should I actually buy UWorld?"</p>
+                                    <p class="text-xs text-gray-500">Answered by Dr. Khalid (IM Resident, Mayo Clinic)</p>
+                                </div>
+                                <div class="p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                                    <p class="text-sm font-medium text-gray-800 mb-1">"How to balance JUST exams with Step prep?"</p>
+                                    <p class="text-xs text-gray-500">Answered by Dr. Sarah (Jordan Board, KAUH)</p>
+                                </div>
+                            </div>
+                            <button onclick="navigate('mentorship')" class="mt-4 w-full py-2 text-sm text-brand-600 font-semibold hover:underline">See all questions &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            `,
+            roadmap: `
+                <div class="fade-in max-w-4xl mx-auto">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Your Career Blueprint</h2>
+                        <p class="text-gray-500">Targeting: <span class="bg-brand-100 text-brand-800 px-2 py-0.5 rounded text-xs font-bold uppercase ml-1">USMLE Pathway</span></p>
+                    </div>
+
+                    <div class="relative border-l-2 border-brand-200 ml-3 space-y-8 pb-8">
+                        <!-- Step 1 -->
+                        <div class="relative pl-8">
+                            <div class="absolute -left-2.5 top-0 w-5 h-5 bg-brand-500 rounded-full border-4 border-white shadow"></div>
+                            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                                <span class="text-xs font-bold text-brand-600 uppercase mb-1 block">Year 2 - Semester 1 (Current)</span>
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">Build the Foundation</h3>
+                                <p class="text-sm text-gray-600 mb-4">Focus entirely on getting good university grades. DO NOT buy expensive USMLE question banks yet.</p>
+                                <div class="bg-brand-50 p-3 rounded-lg border border-brand-100">
+                                    <p class="text-xs font-semibold text-brand-800 mb-2">Insider Tip:</p>
+                                    <p class="text-xs text-brand-700">Start using Anki now for spaced repetition. Download the AnKing deck and unlock cards ONLY for the lectures you took today at JU.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="relative pl-8">
+                            <div class="absolute -left-2.5 top-0 w-5 h-5 bg-gray-300 rounded-full border-4 border-white shadow"></div>
+                            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm opacity-70">
+                                <span class="text-xs font-bold text-gray-500 uppercase mb-1 block">Year 3 - Summer</span>
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">Dedicated Step 1 Prep</h3>
+                                <p class="text-sm text-gray-600">This is when you subscribe to UWorld. You will need roughly 3-4 months of dedicated study time.</p>
+                            </div>
+                        </div>
+
+                         <!-- Step 3 -->
+                         <div class="relative pl-8">
+                            <div class="absolute -left-2.5 top-0 w-5 h-5 bg-gray-300 rounded-full border-4 border-white shadow"></div>
+                            <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm opacity-70">
+                                <span class="text-xs font-bold text-gray-500 uppercase mb-1 block">Year 4 - Clinicals</span>
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">Clinical Electives Search</h3>
+                                <p class="text-sm text-gray-600">Start emailing US programs for clinical electives. You will need a Step 1 Pass to secure most good hospital electives.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            opportunities: `
+                <div class="fade-in max-w-5xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Opportunity Hub</h2>
+                            <p class="text-gray-500 text-sm">Curated exclusively for medical students in Jordan.</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <select class="bg-white border border-gray-200 text-sm rounded-lg px-3 py-2 w-full sm:w-auto outline-none focus:border-brand-500">
+                                <option>All Categories</option>
+                                <option>Research</option>
+                                <option>Volunteering</option>
+                                <option>Conferences</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Card 1 -->
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition group cursor-pointer">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded font-semibold">Research</span>
+                                <span class="text-xs text-gray-400 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Deadline: Oct 15</span>
+                            </div>
+                            <h3 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-brand-600 transition">Data Collection Assistant - Oncology</h3>
+                            <p class="text-sm text-gray-500 mb-4">King Hussein Cancer Center (KHCC) is looking for 2 medical students to help collect patient data for a retrospective breast cancer study.</p>
+                            <div class="flex justify-between items-center border-t border-gray-100 pt-3">
+                                <span class="text-xs font-medium text-gray-600 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> Amman, Jordan</span>
+                                <button class="text-sm font-semibold text-brand-600">Apply Now</button>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition group cursor-pointer">
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded font-semibold">Exchange</span>
+                                <span class="text-xs text-gray-400 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Deadline: Nov 1</span>
+                            </div>
+                            <h3 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-brand-600 transition">IFMSA-Jo SCORE Research Exchange</h3>
+                            <p class="text-sm text-gray-500 mb-4">Applications are open for the upcoming summer research exchange program. Gain international experience in Europe.</p>
+                            <div class="flex justify-between items-center border-t border-gray-100 pt-3">
+                                <span class="text-xs font-medium text-gray-600 flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> International</span>
+                                <button class="text-sm font-semibold text-brand-600">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            ai: `
+                <div class="fade-in max-w-4xl mx-auto h-[calc(100vh-8rem)] flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+                        <div class="bg-brand-100 p-2 rounded-lg text-brand-600">
+                            <i data-lucide="bot" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-gray-800">Study Strategy Assistant</h2>
+                            <p class="text-xs text-gray-500">Ask about study techniques, schedules, or high-yield concepts.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
+                        <!-- Bot Message -->
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shrink-0 mt-1">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </div>
+                            <div class="bg-gray-100 p-3 rounded-2xl rounded-tl-none text-sm text-gray-800 max-w-[85%]">
+                                Hello Ahmed! I see you're studying the MSK module at JU. How can I help you study more effectively today?
+                            </div>
+                        </div>
+                        
+                        <!-- User Message -->
+                        <div class="flex items-start gap-3 flex-row-reverse">
+                            <img src="https://ui-avatars.com/api/?name=Ahmed+M&background=2563eb&color=fff" class="w-8 h-8 rounded-full shrink-0 mt-1">
+                            <div class="bg-brand-600 p-3 rounded-2xl rounded-tr-none text-sm text-white max-w-[85%] shadow-sm">
+                                I'm struggling with the Brachial Plexus anatomy. It's too much to memorize. Do you have a trick?
+                            </div>
+                        </div>
+
+                        <!-- Bot Message -->
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shrink-0 mt-1">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </div>
+                            <div class="bg-gray-100 p-3 rounded-2xl rounded-tl-none text-sm text-gray-800 max-w-[85%]">
+                                <p class="mb-2">Absolutely. Rote memorization for the Brachial Plexus rarely works long-term. Let's use the standard mnemonic and active drawing.</p>
+                                <p class="font-bold mb-1">Mnemonic for the Roots, Trunks, Divisions, Cords, Branches:</p>
+                                <p class="italic text-brand-700 mb-2">"Real Texans Drink Cold Beer"</p>
+                                <p>Instead of just reading it, take a blank piece of paper and draw the "Y" shapes. Would you like me to generate 3 exam-style multiple-choice questions to test your knowledge on nerve lesions (like Erb's vs. Klumpke's)?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 border-t border-gray-100">
+                        <div class="relative">
+                            <input type="text" placeholder="Ask about a topic or study method..." class="w-full bg-white border border-gray-300 rounded-full py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500">
+                            <button class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-brand-600 text-white p-1.5 rounded-full hover:bg-brand-700 transition">
+                                <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <p class="text-center mt-2 text-[10px] text-gray-400">AI is for educational strategy only. Not for clinical decisions.</p>
+                    </div>
+                </div>
+            `,
+            founders: `
+                <div class="fade-in max-w-3xl mx-auto space-y-6">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Founder's Corner</h2>
+                        <p class="text-gray-500">Normalizing the struggle. You are not alone.</p>
+                    </div>
+
+                    <!-- Article 1 -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-brand-300 transition cursor-pointer">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-rose-100 p-2 rounded-full text-rose-600">
+                                <i data-lucide="heart" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Imposter Syndrome</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Surviving the "Doctor Parent" Complex</h3>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-3">When you're the first in your family to study medicine, sitting in a lecture hall filled with peers who have parents, uncles, and siblings in the field can feel isolating. They seem to know the system, the shortcuts, and the jargon. Here is how to build your own network from scratch and reframe your first-gen status as your biggest superpower...</p>
+                        <button class="text-brand-600 font-semibold text-sm hover:underline">Read Full Article</button>
+                    </div>
+
+                    <!-- Article 2 -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-brand-300 transition cursor-pointer">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-amber-100 p-2 rounded-full text-amber-600">
+                                <i data-lucide="battery-warning" class="w-5 h-5"></i>
+                            </div>
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Burnout Recovery</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">The Post-Tawjihi Crash is Real</h3>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-3">You grinded for a year to get 98% in Tawjihi, only to enter First Year Med and realize the grind never stops. It's incredibly common to experience severe academic burnout in your first semester. Let's talk about adjusting your studying expectations and why passing is sometimes a massive victory.</p>
+                        <button class="text-brand-600 font-semibold text-sm hover:underline">Watch Video (4 min)</button>
+                    </div>
+                </div>
+            `,
+            mentorship: `
+                <div class="fade-in max-w-4xl mx-auto flex flex-col items-center justify-center text-center mt-20">
+                    <div class="bg-gray-100 p-4 rounded-full mb-4">
+                        <i data-lucide="users" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Mentorship Board (Coming Soon)</h2>
+                    <p class="text-gray-500 max-w-md mb-6">We are currently verifying our first batch of Jordanian mentors from the US, UK, and local residency programs. Stay tuned!</p>
+                    <button onclick="navigate('dashboard')" class="bg-brand-600 text-white px-6 py-2 rounded-xl font-semibold shadow hover:bg-brand-700 transition">Back to Dashboard</button>
+                </div>
+            `
+        };
+
+        const titles = {
+            dashboard: 'Dashboard',
+            roadmap: 'My Blueprint',
+            opportunities: 'Opportunity Hub',
+            ai: 'Study AI Assistant',
+            founders: "Founder's Corner",
+            mentorship: 'Mentorship Q&A'
+        };
+
+        // Navigation Logic
+        function navigate(viewId) {
+            // Update Content
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = views[viewId];
+            
+            // Re-initialize icons in new content
+            lucide.createIcons();
+
+            // Update Title
+            document.getElementById('page-title').innerText = titles[viewId];
+
+            // Update Active State in Sidebar
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.target === viewId) {
+                    btn.classList.remove('text-gray-600', 'hover:bg-gray-50', 'hover:text-brand-600');
+                    btn.classList.add('text-brand-600', 'bg-brand-50');
+                } else {
+                    btn.classList.add('text-gray-600', 'hover:bg-gray-50', 'hover:text-brand-600');
+                    btn.classList.remove('text-brand-600', 'bg-brand-50');
+                }
+            });
+
+            // Close mobile sidebar if open
+            if(window.innerWidth < 1024) {
+                const sidebar = document.getElementById('sidebar');
+                if(!sidebar.classList.contains('-translate-x-full')) {
+                    toggleSidebar();
+                }
+            }
+        }
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            navigate('dashboard'); // Load default view
+        });
+    </script>
+</body>
+</html>
+
+
